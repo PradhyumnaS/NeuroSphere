@@ -10,7 +10,7 @@ if 'rl_agent' not in st.session_state:
     from reinforcement import PromptOptimizationRL
     st.session_state.rl_agent = PromptOptimizationRL()
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 MODEL_NAME = 'gemini-2.0-flash'
 
 st.title("💭 Chat with Me")
