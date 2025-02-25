@@ -2,10 +2,8 @@ import streamlit as st
 import google.generativeai as genai
 import speech_recognition as sr
 from gtts import gTTS
-import os
-from dotenv import load_dotenv
+from streamlit_mic_recorder import speech_to_text
 
-load_dotenv()
 if 'rl_agent' not in st.session_state:
     from reinforcement import PromptOptimizationRL
     st.session_state.rl_agent = PromptOptimizationRL()
@@ -103,15 +101,17 @@ if input_method == "Text Input":
     if send_button and user_text:
         process_message(user_text)
 else:
-    _, center_col, _ = st.columns([1, 2, 1])
-    with center_col:
-        record_button = st.button("🎤 Start Recording", use_container_width=True)
-    
-    if record_button:
-        transcription = record_and_transcribe()
-        if transcription:
-            st.success(f"You said: {transcription}")
-            process_message(transcription)
+    spoken_text = speech_to_text(
+                    language='en',
+                    start_prompt="Speak now...",
+                    stop_prompt="Done",
+                    use_container_width=True,
+                    just_once=True,
+                    key='STT',
+                )
+                
+    if spoken_text:
+        process_message(spoken_text)
 
 message_pairs = []
 for i in range(0, len(st.session_state.messages), 2):

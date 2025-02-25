@@ -7,9 +7,8 @@ SpeechRecognition
 gtts
 streamlit-drawable-canvas
 requests
-pyaudio
 pillow
 numpy
 scipy
 matplotlib
-portaudio19-dev
+streamlit_mic_recorder
