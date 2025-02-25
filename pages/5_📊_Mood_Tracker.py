@@ -7,18 +7,15 @@ import random
 
 st.title("📊 Mood Tracker")
 
-# Initialize session state for mood data
 if 'mood_data' not in st.session_state:
-    # Generate sample data for first-time users
     dates = pd.date_range(end=datetime.today(), periods=14).tolist()
     moods = ["Happy", "Calm", "Sad", "Anxious", "Excited", "Tired", "Neutral"]
     intensities = [1, 2, 3, 4, 5]
     
     sample_data = []
     for date in dates:
-        # Generate 1-3 mood entries per day
         for _ in range(random.randint(1, 3)):
-            time_of_day = random.randint(8, 22)  # Between 8 AM and 10 PM
+            time_of_day = random.randint(8, 22)
             mood_datetime = date.replace(hour=time_of_day, minute=random.randint(0, 59))
             
             sample_data.append({
@@ -32,7 +29,6 @@ if 'mood_data' not in st.session_state:
     
     st.session_state.mood_data = sample_data
 
-# Mood definitions and emojis
 mood_emojis = {
     "Happy": "😊",
     "Calm": "😌",
@@ -45,7 +41,6 @@ mood_emojis = {
     "Stressed": "😫"
 }
 
-# CSS styling
 st.markdown("""
 <style>
     .mood-btn {
@@ -95,7 +90,6 @@ tab1, tab2 = st.tabs(["Log Mood", "Mood Insights"])
 with tab1:
     st.header("How are you feeling right now?")
     
-    # Create a grid of mood buttons
     col1, col2, col3 = st.columns(3)
     
     mood_selected = None
@@ -124,11 +118,9 @@ with tab1:
         if st.button(f"{mood_emojis['Stressed']} Stressed", use_container_width=True):
             mood_selected = "Stressed"
     
-    # Store the selected mood in session state
     if mood_selected:
         st.session_state.current_mood = mood_selected
     
-    # If a mood is selected, display intensity slider and notes
     if 'current_mood' in st.session_state:
         st.markdown(f"### You selected: {mood_emojis[st.session_state.current_mood]} {st.session_state.current_mood}")
         
@@ -137,10 +129,8 @@ with tab1:
         mood_note = st.text_area("Add a note (optional):", placeholder="What triggered this feeling? What's on your mind?")
         
         if st.button("Save Mood"):
-            # Get current datetime
             now = datetime.now()
             
-            # Create new mood entry
             new_entry = {
                 'datetime': now,
                 'date': now.strftime('%Y-%m-%d'),
@@ -150,21 +140,17 @@ with tab1:
                 'note': mood_note
             }
             
-            # Add to session state
             st.session_state.mood_data.append(new_entry)
             
             st.success("Mood logged successfully!")
             
-            # Clear the current mood
             del st.session_state.current_mood
             
             st.experimental_rerun()
     
-    # Recent mood logs
     st.header("Recent Mood Logs")
     
     if len(st.session_state.mood_data) > 0:
-        # Sort by datetime (newest first)
         recent_moods = sorted(st.session_state.mood_data, key=lambda x: x['datetime'], reverse=True)[:5]
         
         for mood in recent_moods:
@@ -181,14 +167,12 @@ with tab1:
 with tab2:
     st.header("Your Mood Patterns")
     
-    # Convert session state data to DataFrame for analysis
     df = pd.DataFrame(st.session_state.mood_data)
     
     if not df.empty:
         df['datetime'] = pd.to_datetime(df['datetime'])
         df['date'] = pd.to_datetime(df['date'])
         
-        # Time period selector
         time_period = st.radio("Select time period:", 
                               ["Last 7 days", "Last 30 days", "All time"], 
                               horizontal=True)
@@ -203,7 +187,6 @@ with tab2:
             filtered_df = df
         
         if not filtered_df.empty:
-            # Mood frequency chart
             mood_counts = filtered_df['mood'].value_counts().reset_index()
             mood_counts.columns = ['Mood', 'Count']
             
@@ -225,7 +208,6 @@ with tab2:
             
             st.plotly_chart(fig1, use_container_width=True)
             
-            # Mood intensity over time
             filtered_df = filtered_df.sort_values('datetime')
             
             fig2 = go.Figure()
@@ -256,17 +238,13 @@ with tab2:
             
             st.plotly_chart(fig2, use_container_width=True)
             
-            # Mood patterns
             st.header("Mood Patterns")
             
-            # Identify most frequent mood
             most_frequent_mood = mood_counts.iloc[0]['Mood']
             mood_percentage = (mood_counts.iloc[0]['Count'] / mood_counts['Count'].sum()) * 100
             
-            # Calculate average mood intensity
             avg_intensity = filtered_df['intensity'].mean()
             
-            # Display insights
             col1, col2 = st.columns(2)
             
             with col1:
@@ -277,17 +255,13 @@ with tab2:
                 st.metric("Average Mood Intensity", f"{avg_intensity:.1f}/5", 
                          "+0.2 from last week" if random.random() > 0.5 else "-0.3 from last week")
             
-            # Daily mood patterns
             st.subheader("Time of Day Patterns")
             
-            # Extract hour from time
             filtered_df['hour'] = filtered_df['datetime'].dt.hour
             
-            # Group by hour and calculate average intensity
             hourly_mood = filtered_df.groupby(['hour', 'mood']).size().reset_index()
             hourly_mood.columns = ['hour', 'mood', 'count']
             
-            # Create time of day chart
             fig3 = px.bar(hourly_mood, x='hour', y='count', color='mood',
                          labels={'hour': 'Hour of Day', 'count': 'Frequency'},
                          color_discrete_sequence=px.colors.qualitative.Pastel)

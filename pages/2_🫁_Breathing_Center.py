@@ -3,7 +3,6 @@ import time
 
 st.title("🫁 Breathing Center")
 
-# Custom CSS for breathing animation
 st.markdown("""
     <style>
     @keyframes breathe {

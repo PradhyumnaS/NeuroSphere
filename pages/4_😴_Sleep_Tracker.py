@@ -6,9 +6,7 @@ from datetime import datetime, timedelta
 
 st.title("😴 Sleep Tracker")
 
-# Initialize session state for sleep data if it doesn't exist
 if 'sleep_data' not in st.session_state:
-    # Create sample data for first-time users
     dates = pd.date_range(end=datetime.today(), periods=7).tolist()
     sample_data = []
     
@@ -22,7 +20,6 @@ if 'sleep_data' not in st.session_state:
     
     st.session_state.sleep_data = sample_data
 
-# CSS for styling
 st.markdown("""
 <style>
     .card {
@@ -121,7 +118,6 @@ with tab1:
                               placeholder="Any factors affecting your sleep? (stress, caffeine, exercise, etc.)")
     
     if st.button("Save Sleep Log"):
-        # Check if we're updating an existing entry or adding a new one
         date_str = sleep_date.strftime('%Y-%m-%d')
         existing_entry_index = None
         
@@ -144,24 +140,20 @@ with tab1:
             st.session_state.sleep_data.append(new_entry)
             st.success(f"Added new sleep log for {date_str}")
         
-        # Reset the temp rating
         st.session_state.temp_rating = 0
         st.experimental_rerun()
 
 with tab2:
     st.header("Your Sleep Patterns")
     
-    # Convert session state data to DataFrame for analysis
     df = pd.DataFrame(st.session_state.sleep_data)
     df['date'] = pd.to_datetime(df['date'])
     df = df.sort_values('date')
     
-    # Calculate metrics
     avg_sleep = df['hours'].mean()
     avg_quality = df['quality'].mean()
     consistency = 100 - (df['hours'].std() / df['hours'].mean() * 100)
     
-    # Display metrics
     st.markdown("""
     <div class="metrics-container">
         <div class="metric">
@@ -179,10 +171,8 @@ with tab2:
     </div>
     """.format(avg_sleep, avg_quality, consistency), unsafe_allow_html=True)
     
-    # Create sleep duration chart
     fig1 = go.Figure()
     
-    # Add sleep hours bar
     fig1.add_trace(go.Bar(
         x=df['date'],
         y=df['hours'],
@@ -190,7 +180,6 @@ with tab2:
         marker_color='#236860'
     ))
     
-    # Add recommended range
     fig1.add_trace(go.Scatter(
         x=df['date'],
         y=[7] * len(df),
@@ -212,10 +201,8 @@ with tab2:
     
     st.plotly_chart(fig1, use_container_width=True)
     
-    # Create quality chart
     fig2 = go.Figure()
     
-    # Add quality scatter plot
     fig2.add_trace(go.Scatter(
         x=df['date'],
         y=df['quality'],
@@ -237,10 +224,8 @@ with tab2:
     
     st.plotly_chart(fig2, use_container_width=True)
     
-    # Sleep log table
     st.header("Sleep Log")
     
-    # Format for display
     display_df = df.copy()
     display_df['date'] = display_df['date'].dt.strftime('%Y-%m-%d')
     display_df['quality'] = display_df['quality'].apply(lambda x: '⭐' * int(x))

@@ -1,12 +1,10 @@
 import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 import pandas as pd
-import numpy as np
 import time
 
 st.title("🎨 Therapeutic Activities")
 
-# CSS for styling
 st.markdown("""
 <style>
     .activity-card {
@@ -53,11 +51,9 @@ activities = {
     }
 }
 
-# Activity selector
 activity_names = list(activities.keys())
 selected_activity = st.selectbox("Choose an activity:", activity_names)
 
-# Display the selected activity
 st.markdown(f"""
 <div class="activity-card">
     <div class="activity-title">{activities[selected_activity]['icon']} {selected_activity}</div>
@@ -65,11 +61,9 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Activity content
 if selected_activity == "Mindful Drawing":
     st.write("Use the canvas below to express how you're feeling right now. Focus on the process, not the result.")
     
-    # Specify canvas parameters
     drawing_mode = st.selectbox(
         "Drawing tool:",
         ("freedraw", "line", "rect", "circle", "transform")
@@ -79,7 +73,6 @@ if selected_activity == "Mindful Drawing":
     stroke_color = st.color_picker("Stroke color: ", "#236860")
     bg_color = st.color_picker("Background color: ", "#FFFFFF")
     
-    # Create a canvas component
     canvas_result = st_canvas(
         fill_color="rgba(255, 165, 0, 0.3)",
         stroke_width=stroke_width,
@@ -90,7 +83,6 @@ if selected_activity == "Mindful Drawing":
         key="canvas",
     )
     
-    # Save drawing button
     if st.button("💾 Save Your Creation"):
         st.success("Your artwork has been saved to your profile!")
         
@@ -103,7 +95,6 @@ elif selected_activity == "Gratitude Practice":
     
     if st.button("📝 Save Gratitude Journal"):
         if gratitude_1 or gratitude_2 or gratitude_3:
-            # Save gratitude entries
             if 'gratitude_entries' not in st.session_state:
                 st.session_state.gratitude_entries = []
                 
@@ -133,8 +124,7 @@ elif selected_activity == "Sound Bath":
         st.audio(f"assets/audio/{sound_options[selected_sound]}", format='audio/mp3', loop=True)
         
         with st.spinner("Sound bath in progress..."):
-            # Timer with progress bar
-            duration = 60  # 1 minute sound bath
+            duration = 60
             progress_bar = st.progress(0)
             
             for i in range(duration):

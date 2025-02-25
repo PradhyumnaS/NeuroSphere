@@ -6,7 +6,6 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-# Load shared resources
 if 'rl_agent' not in st.session_state:
     from reinforcement import PromptOptimizationRL
     st.session_state.rl_agent = PromptOptimizationRL()
@@ -82,11 +81,9 @@ def process_message(message_text):
         if audio_file:
             st.audio(audio_file)
 
-# Initialize chat history
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 
-# Input methods
 st.write("### Choose Input Method")
 input_method = st.radio(
     "Input method selection",
@@ -106,7 +103,6 @@ else:
             st.success(f"You said: {transcription}")
             process_message(transcription)
 
-# Display chat history
 message_pairs = []
 for i in range(0, len(st.session_state.messages), 2):
     if i+1 < len(st.session_state.messages):
@@ -119,7 +115,6 @@ for user_msg, assistant_msg, msg_idx in reversed(message_pairs):
     with st.chat_message(assistant_msg["role"]):
         st.write(assistant_msg["content"])
         
-        # Feedback buttons
         st.markdown("""
         <style>
         .feedback-button {

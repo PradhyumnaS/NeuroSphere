@@ -10,6 +10,7 @@ NeuroSphere is a comprehensive mental health support application that combines A
   - Engage in therapeutic conversations with an AI-powered chatbot
   - Voice input support for natural interaction
   - Text-to-speech capability for responses
+  - Adaptive reinforcement learning for better responses.
 
 - **Wellness Tools** 🎯
   - **Breathing Center** 🫁: Guided breathing exercises
@@ -46,12 +47,6 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. **Set up environment variables**
-Create a `.env` file in the root directory:
-```env
-CLARIFAI_PAT=your_clarifai_pat_here
-```
-
 ## 🎮 Running the Application
 
 1. **Start the Streamlit server**
@@ -65,41 +60,12 @@ Open your web browser and navigate to:
 http://localhost:8501
 ```
 
-## 📦 Dependencies
-
-- streamlit
-- speech_recognition
-- clarifai-grpc
-- gTTS
-- streamlit-drawable-canvas
-- plotly
-- pandas
-- numpy
-- scipy
-- requests
-
-## 🔧 Configuration
-
-The application uses several API keys and configurations:
-- Clarifai API for AI chat functionality
-- Various audio files for sound therapy
-- Custom UI components and styling
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- Anthropic's Claude for AI capabilities
 - Streamlit for the wonderful web framework
 - All contributors and users of the application
 
@@ -110,4 +76,3 @@ For Queries, dm on NeuroSphere
 
 ---
 
-<p align="center">Made with ❤️ for mental health awareness</p>
