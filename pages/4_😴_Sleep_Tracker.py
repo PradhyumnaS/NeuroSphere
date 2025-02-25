@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import numpy as np
 from datetime import datetime, timedelta
 
-st.title("😴 Sleep Tracker")
+st.markdown("<h1 style='text-align: center;'>😴 Sleep Tracker</h1>", unsafe_allow_html=True)
 
 if 'sleep_data' not in st.session_state:
     dates = pd.date_range(end=datetime.today(), periods=7).tolist()
@@ -23,11 +23,12 @@ if 'sleep_data' not in st.session_state:
 st.markdown("""
 <style>
     .card {
-        border-radius: 10px;
-        padding: 20px;
-        margin: 10px 0px;
-        background: white;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-radius: 20px;
+        padding: 25px;
+        margin: 20px 0;
+        background: linear-gradient(to right bottom, #FFF5E6, #FDF2E9);
+        box-shadow: 0 8px 16px rgba(211, 84, 0, 0.1);
+        border: 1px solid rgba(230, 126, 34, 0.2);
     }
     .metrics-container {
         display: flex;
@@ -36,20 +37,21 @@ st.markdown("""
         margin: 20px 0;
     }
     .metric {
-        border-radius: 10px;
-        padding: 15px;
-        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        background: white;
         width: 30%;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 12px rgba(211, 84, 0, 0.1);
+        border: 1px solid rgba(230, 126, 34, 0.1);
     }
     .metric-value {
         font-size: 1.8rem;
         font-weight: bold;
-        color: #236860;
+        color: #E67E22;
     }
     .metric-label {
         font-size: 0.9rem;
-        color: #777;
+        color: #666;
     }
     .rating-container {
         display: flex;
@@ -59,7 +61,31 @@ st.markdown("""
     .rating-star {
         font-size: 2rem;
         cursor: pointer;
+        color: #E67E22;
         transition: all 0.2s;
+    }
+    /* Streamlit elements styling */
+    .stButton > button {
+        background-color: #E67E22 !important;
+        color: white !important;
+        border: none !important;
+        padding: 0.75rem 1.25rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .stButton > button:hover {
+        background-color: #D35400 !important;
+        box-shadow: 0 4px 12px rgba(211, 84, 0, 0.2);
+    }
+    div[data-testid="stDateInput"] > div > input {
+        border-color: rgba(230, 126, 34, 0.2);
+    }
+    div[data-testid="stNumberInput"] > div > input {
+        border-color: rgba(230, 126, 34, 0.2);
+    }
+    div[data-testid="stTextArea"] > div > textarea {
+        border-color: rgba(230, 126, 34, 0.2);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -96,19 +122,19 @@ with tab1:
         st.session_state.temp_rating = 0
     
     with rating_col1:
-        if st.button("⭐", key="star1"):
+        if st.button("1", key="star1"):
             st.session_state.temp_rating = 1
     with rating_col2:
-        if st.button("⭐", key="star2"):
+        if st.button("2", key="star2"):
             st.session_state.temp_rating = 2
     with rating_col3:
-        if st.button("⭐", key="star3"):
+        if st.button("3", key="star3"):
             st.session_state.temp_rating = 3
     with rating_col4:
-        if st.button("⭐", key="star4"):
+        if st.button("4", key="star4"):
             st.session_state.temp_rating = 4
     with rating_col5:
-        if st.button("⭐", key="star5"):
+        if st.button("5", key="star5"):
             st.session_state.temp_rating = 5
     
     quality_rating = st.session_state.temp_rating
@@ -177,7 +203,7 @@ with tab2:
         x=df['date'],
         y=df['hours'],
         name='Hours Slept',
-        marker_color='#236860'
+        marker_color='#E67E22'
     ))
     
     fig1.add_trace(go.Scatter(
@@ -185,7 +211,7 @@ with tab2:
         y=[7] * len(df),
         mode='lines',
         name='Recommended',
-        line=dict(color='rgba(235, 52, 52, 0.7)', width=2, dash='dash')
+        line=dict(color='rgba(211, 84, 0, 0.5)', width=2, dash='dash')
     ))
     
     fig1.update_layout(
@@ -208,7 +234,8 @@ with tab2:
         y=df['quality'],
         mode='lines+markers',
         name='Sleep Quality',
-        marker=dict(size=10, color='#2E7D32')
+        marker=dict(size=10, color='#E67E22'),
+        line=dict(color='#E67E22')
     ))
     
     fig2.update_layout(

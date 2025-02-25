@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.title("🧘 Stress Burster")
+st.markdown("<h1 style='text-align: center;'>🧘 Stress Buster</h1>", unsafe_allow_html=True)
     
 st.markdown("""
 <style>
@@ -16,7 +16,7 @@ st.markdown("""
 
 st.markdown("""
 ### Take a Moment to Unwind 
-Interact with our BlueBall and let your stress melt away.
+Interact with our stress ball and let your stress melt away.
 """)
 
 st.markdown("""

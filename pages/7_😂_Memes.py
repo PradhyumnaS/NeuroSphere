@@ -1,10 +1,34 @@
 import streamlit as st
 import requests
 
-st.header("🎮 Brainrot Corner")
+st.markdown("<h1 style='text-align: center;'>😂 Memes</h1>", unsafe_allow_html=True)
 
 if 'meme_counter' not in st.session_state:
     st.session_state.meme_counter = 0
+
+if 'meme_counter' not in st.session_state:
+    st.session_state.meme_counter = 0
+
+st.markdown("""
+<style>
+    /* Center align button container */
+    div.row-widget.stButton {
+        text-align: center;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        margin: 1rem auto;  /* Changed to auto for horizontal centering */
+    }
+    
+    /* Ensure button itself is centered */
+    .stButton > button {
+        margin: 0 auto;
+        display: block;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 def fetch_random_meme():
     try:

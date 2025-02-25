@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import datetime
 
-st.title("🙏 Gratitude Journal")
+st.markdown("<h1 style='text-align: center;'>📝 Journal Center</h1>", unsafe_allow_html=True)
     
 if 'gratitude_entries' not in st.session_state:
     st.session_state.gratitude_entries = []

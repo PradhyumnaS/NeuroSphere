@@ -5,7 +5,7 @@ import plotly.express as px
 from datetime import datetime, timedelta
 import random
 
-st.title("📊 Mood Tracker")
+st.markdown("<h1 style='text-align: center;'>📊 Mood Tracker</h1>", unsafe_allow_html=True)
 
 if 'mood_data' not in st.session_state:
     dates = pd.date_range(end=datetime.today(), periods=14).tolist()
@@ -53,34 +53,64 @@ st.markdown("""
         margin: 5px 0;
         cursor: pointer;
         transition: all 0.3s;
+        background-color: #E67E22;
+        color: white;
     }
     .mood-btn:hover {
         transform: translateY(-3px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        background-color: #D35400;
+        box-shadow: 0 4px 12px rgba(211, 84, 0, 0.2);
     }
     .mood-log {
-        background-color: white;
+        background: linear-gradient(to right bottom, #FFF5E6, #FDF2E9);
         padding: 15px;
         border-radius: 10px;
         margin: 15px 0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 16px rgba(211, 84, 0, 0.1);
+        border: 1px solid rgba(230, 126, 34, 0.2);
     }
     .mood-date {
-        color: #777;
+        color: #666;
         font-size: 0.9rem;
     }
     .mood-text {
         font-size: 1.2rem;
         margin: 5px 0;
+        color: #E67E22;
     }
     .stButton > button {
-        background-color: #236860;
-        color: white;
+        background-color: #E67E22 !important;
+        color: white !important;
+        border: none !important;
+        padding: 0.75rem 1.25rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .stButton > button:hover {
+        background-color: #D35400 !important;
+        box-shadow: 0 4px 12px rgba(211, 84, 0, 0.2);
     }
     .stExpander {
         border: none !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        box-shadow: 0 8px 16px rgba(211, 84, 0, 0.1) !important;
         border-radius: 10px !important;
+    }
+    div[data-testid="stTextArea"] > div > textarea {
+        border-color: rgba(230, 126, 34, 0.2);
+    }
+    div[data-baseweb="slider"] > div {
+        background-color: rgba(230, 126, 34, 0.2) !important;
+    }
+    div[data-baseweb="slider"] > div > div {
+        background-color: #E67E22 !important;
+    }
+    /* Radio button styling */
+    .stRadio > div {
+        background-color: transparent;
+    }
+    .stRadio > div > div > label {
+        color: #E67E22 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -155,12 +185,12 @@ with tab1:
         
         for mood in recent_moods:
             with st.expander(f"{mood_emojis[mood['mood']]} {mood['mood']} - {mood['date']} at {mood['time']}"):
-                st.markdown(f"**Intensity:** {'●' * mood['intensity']}{'○' * (5 - mood['intensity'])}")
-                
-                if mood['note']:
-                    st.markdown(f"**Note:** {mood['note']}")
-                else:
-                    st.markdown("*No notes added*")
+                st.markdown(f"""
+                <div style='color: #444444;'>
+                    <p><strong>Intensity:</strong> <span class='intensity-dots'>{'●' * mood['intensity']}</span><span class='empty-dots'>{'○' * (5 - mood['intensity'])}</span></p>
+                    {f"<p><strong>Note:</strong> <span class='note-text'>{mood['note']}</span></p>" if mood['note'] else "<p><em style='color: #666666;'>No notes added</em></p>"}
+                </div>
+            """, unsafe_allow_html=True)
     else:
         st.info("No mood logs yet. Start tracking your moods above!")
 
@@ -267,7 +297,6 @@ with tab2:
                          color_discrete_sequence=px.colors.qualitative.Pastel)
             
             fig3.update_layout(
-                title='Mood Distribution Throughout the Day',
                 xaxis=dict(tickvals=list(range(0, 24, 3)), ticktext=['12 AM', '3 AM', '6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM']),
                 height=300,
                 margin=dict(l=0, r=0, t=40, b=0),

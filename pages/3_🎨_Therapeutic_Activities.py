@@ -3,31 +3,55 @@ from streamlit_drawable_canvas import st_canvas
 import pandas as pd
 import time
 
-st.title("🎨 Therapeutic Activities")
+st.markdown("<h1 style='text-align: center;'>🎨 Therapeutic Activities</h1>", unsafe_allow_html=True)
 
 st.markdown("""
 <style>
     .activity-card {
-        background: linear-gradient(to right bottom, #ffffff, #f5f7f9);
-        border-radius: 15px;
-        padding: 20px;
-        margin: 15px 0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        background: linear-gradient(to right bottom, #FFF5E6, #FDF2E9);
+        border-radius: 20px;
+        padding: 25px;
+        margin: 20px 0;
+        box-shadow: 0 8px 16px rgba(211, 84, 0, 0.1);
         transition: all 0.3s ease;
+        border: 1px solid rgba(230, 126, 34, 0.2);
     }
     .activity-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 16px rgba(211, 84, 0, 0.2);
     }
     .activity-title {
-        color: #236860;
+        color: #E67E22;
         font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 0.8rem;
+        text-shadow: 2px 2px 4px rgba(211, 84, 0, 0.1);
     }
     .stButton > button {
-        background-color: #236860;
-        color: white;
+        background-color: #E67E22 !important;
+        color: white !important;
+        border: none !important;
+        padding: 0.75rem 1.25rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .stButton > button:hover {
+        background-color: #D35400 !important;
+        box-shadow: 0 4px 12px rgba(211, 84, 0, 0.2);
+    }
+    /* Progress bar color */
+    .stProgress > div > div {
+        background-color: #E67E22;
+    }
+    /* Selectbox styling */
+    div[data-testid="stSelectbox"] {
+        width: 100%;
+    }
+     .activity-description {
+        color: #444444;  /* Dark gray for better readability */
+        font-size: 1.1rem;
+        line-height: 1.5;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -57,7 +81,7 @@ selected_activity = st.selectbox("Choose an activity:", activity_names)
 st.markdown(f"""
 <div class="activity-card">
     <div class="activity-title">{activities[selected_activity]['icon']} {selected_activity}</div>
-    <p>{activities[selected_activity]['description']}</p>
+    <p class="activity-description">{activities[selected_activity]['description']}</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -66,11 +90,11 @@ if selected_activity == "Mindful Drawing":
     
     drawing_mode = st.selectbox(
         "Drawing tool:",
-        ("freedraw", "line", "rect", "circle", "transform")
+        ("freedraw", "line", "rectangle", "circle", "transform")
     )
     
     stroke_width = st.slider("Stroke width: ", 1, 25, 3)
-    stroke_color = st.color_picker("Stroke color: ", "#236860")
+    stroke_color = st.color_picker("Stroke color: ", "#E67E22")
     bg_color = st.color_picker("Background color: ", "#FFFFFF")
     
     canvas_result = st_canvas(
@@ -154,7 +178,7 @@ elif selected_activity == "Positive Affirmations":
     
     for i, affirmation in enumerate(affirmations):
         st.markdown(f"""
-        <div class="activity-card" style="background: linear-gradient(45deg, rgba(35, 104, 96, 0.1), rgba(35, 104, 96, 0.05));">
+        <div class="activity-card" style="background: linear-gradient(45deg, rgba(230, 126, 34, 0.1), rgba(211, 84, 0, 0.05));">
             <p style="font-size: 1.2rem; text-align: center; font-style: italic;">"{affirmation}"</p>
         </div>
         """, unsafe_allow_html=True)

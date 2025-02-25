@@ -1,39 +1,51 @@
 import streamlit as st
 import time
 
-st.title("🫁 Breathing Center")
+st.markdown("<h1 style='text-align: center;'>🫁 Breathing Center</h1>", unsafe_allow_html=True)
 
 st.markdown("""
     <style>
     @keyframes breathe {
-        0% { transform: scale(1); opacity: 0.3; }
-        50% { transform: scale(1.5); opacity: 0.8; }
-        100% { transform: scale(1); opacity: 0.3; }
+        0% { transform: scale(1); opacity: 0.4; }
+        50% { transform: scale(1.5); opacity: 0.9; }
+        100% { transform: scale(1); opacity: 0.4; }
     }
     .breathing-circle {
         width: 150px;
         height: 150px;
-        background: radial-gradient(circle, #236860, #2E7D32);
+        background: radial-gradient(circle, #E67E22, #D35400);
         border-radius: 50%;
         margin: 40px auto;
         animation: breathe 8s infinite ease-in-out;
-        box-shadow: 0 0 30px rgba(46, 125, 50, 0.3);
+        box-shadow: 0 0 40px rgba(230, 126, 34, 0.4);
+        position: relative;
+    }
+    .breathing-circle::after {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(230, 126, 34, 0.2), transparent);
+        z-index: -1;
     }
     .exercise-card {
-        background: linear-gradient(to right bottom, #ffffff, #f8f9fa);
+        background: linear-gradient(to right bottom, #FFF5E6, #FDF2E9);
         border-radius: 20px;
         padding: 25px;
         margin: 20px 0;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        color: #1a1a1a;
-        border: 1px solid rgba(46, 125, 50, 0.1);
+        box-shadow: 0 8px 16px rgba(211, 84, 0, 0.1);
+        color: #444444;
+        border: 1px solid rgba(230, 126, 34, 0.2);
     }
     .timer-text {
-        font-size: 3em;
+        font-size: 3.2em;
         font-weight: bold;
         text-align: center;
-        color: #2E7D32;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        color: #E67E22;
+        text-shadow: 2px 2px 4px rgba(211, 84, 0, 0.2);
         margin: 20px 0;
     }
     div[data-testid="stSelectbox"] {
@@ -41,10 +53,29 @@ st.markdown("""
     }
     .stButton > button {
         width: 100%;
-        padding: 0.5rem 1rem;
+        padding: 0.75rem 1.25rem;
         font-size: 1.1rem;
         font-weight: 500;
         margin: 10px 0;
+        background-color: #E67E22 !important;
+        border: none !important;
+        color: white !important;
+        transition: all 0.3s ease;
+    }
+    .stButton > button:hover {
+        background-color: #D35400 !important;
+        box-shadow: 0 4px 12px rgba(211, 84, 0, 0.2);
+    }
+    /* Custom checkbox styles */
+    [data-testid="stCheckbox"] > label {
+        display: flex;
+        align-items: center;
+        height: 42px;  /* Match button height */
+        margin: 10px 0;
+    }
+    /* Progress bar color */
+    .stProgress > div > div {
+        background-color: #E67E22;
     }
     </style>
 """, unsafe_allow_html=True)
