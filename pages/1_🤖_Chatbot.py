@@ -73,13 +73,15 @@ def speak(text):
         return None
 
 def process_message(message_text):
-    response = generate_response(message_text)
-    if response:
-        st.session_state.messages.append({"role": "user", "content": message_text})
-        st.session_state.messages.append({"role": "assistant", "content": response})
-        audio_file = speak(response)
-        if audio_file:
-            st.audio(audio_file)
+    if message_text:
+        with st.spinner("Generating response..."):
+            response = generate_response(message_text)
+            if response:
+                st.session_state.messages.append({"role": "user", "content": message_text})
+                st.session_state.messages.append({"role": "assistant", "content": response})
+                audio_file = speak(response)
+                if audio_file:
+                    st.audio(audio_file)
 
 if 'messages' not in st.session_state:
     st.session_state.messages = []
@@ -92,12 +94,20 @@ input_method = st.radio(
 )
 
 if input_method == "Text Input":
-    user_text = st.text_input("Type your message:", key="text_input")
-    if st.button("Send"):
-        if user_text:
-            process_message(user_text)
+    col1, col2 = st.columns([5, 1])
+    with col1:
+        user_text = st.text_input("Type your message:", key="text_input", label_visibility="collapsed")
+    with col2:
+        send_button = st.button("Send", use_container_width=True)
+    
+    if send_button and user_text:
+        process_message(user_text)
 else:
-    if st.button("🎤 Start Recording"):
+    _, center_col, _ = st.columns([1, 2, 1])
+    with center_col:
+        record_button = st.button("🎤 Start Recording", use_container_width=True)
+    
+    if record_button:
         transcription = record_and_transcribe()
         if transcription:
             st.success(f"You said: {transcription}")
@@ -130,28 +140,28 @@ for user_msg, assistant_msg, msg_idx in reversed(message_pairs):
         feedback_col1, feedback_col2, feedback_col3, feedback_col4 = st.columns(4)
         
         with feedback_col1:
-            if st.button("👍 Helpful", key=f"helpful_{msg_idx}", use_container_width=True):
+            if st.button("Helpful", key=f"helpful_{msg_idx}", use_container_width=True):
                 reward = st.session_state.rl_agent.give_feedback("helpful")
                 st.session_state.rl_agent.process_feedback(reward)
                 st.success("Thanks for your feedback!")
                 st.rerun()
 
         with feedback_col2:
-            if st.button("❤️ Empathy", key=f"empathy_{msg_idx}", use_container_width=True):
+            if st.button("Need Empathy", key=f"empathy_{msg_idx}", use_container_width=True):
                 reward = st.session_state.rl_agent.give_feedback("more_empathy")
                 st.session_state.rl_agent.process_feedback(reward)
                 st.info("I'll be more empathetic next time.")
                 st.rerun()
 
         with feedback_col3:
-            if st.button("🛠️ Practical", key=f"practical_{msg_idx}", use_container_width=True):
+            if st.button("Need Practicality", key=f"practical_{msg_idx}", use_container_width=True):
                 reward = st.session_state.rl_agent.give_feedback("more_practical")
                 st.session_state.rl_agent.process_feedback(reward)
                 st.info("I'll provide more practical advice next time.")
                 st.rerun()
 
         with feedback_col4:
-            if st.button("👎 Not Helpful", key=f"not_helpful_{msg_idx}", use_container_width=True):
+            if st.button("Not Helpful", key=f"not_helpful_{msg_idx}", use_container_width=True):
                 reward = st.session_state.rl_agent.give_feedback("not_helpful")
                 st.session_state.rl_agent.process_feedback(reward)
                 st.info("I'll improve my responses next time.")

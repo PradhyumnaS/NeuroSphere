@@ -12,3 +12,4 @@ pillow
 numpy
 scipy
 matplotlib
+portaudio19-dev
