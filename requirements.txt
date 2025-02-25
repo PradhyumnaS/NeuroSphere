@@ -1,0 +1,14 @@
+streamlit
+pandas
+plotly
+google-generativeai
+python-dotenv
+SpeechRecognition
+gtts
+streamlit-drawable-canvas
+requests
+pyaudio
+pillow
+numpy
+scipy
+matplotlib
