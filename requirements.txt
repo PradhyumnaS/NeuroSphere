@@ -12,3 +12,5 @@ numpy
 scipy
 matplotlib
 streamlit_mic_recorder
+bcrypt
+uuid
