@@ -16,8 +16,3 @@ bcrypt
 uuid
 redis
 scikit-learn
-json
-sys
-os
-collections
-random
