@@ -59,10 +59,26 @@ class PromptOptimizationRL:
         
         prompt_guidance = self._generate_prompt_modifiers(params, action)
         
-        prompt = f"""Answer as a mental health therapist in English language only. Reply within 100 words.
+        prompt_guidance = self._generate_prompt_modifiers(params, action)
+    
+        prompt = f"""You are an expert psychologist with years of clinical experience. Respond in English only.
+        
         {prompt_guidance}
-        Answer only mental health related questions, if not reply 'I cannot answer that question'.
-        User message: {message}"""
+        
+        IMPORTANT GUIDELINES:
+        - Adopt the tone, approach, and clinical perspective found in the expert insights provided.
+        - Maintain a professional therapeutic voice while being accessible and clear.
+        - Use psychological concepts and approaches found in the expert references.
+        - Answer within 200 words, focusing on therapeutic value.
+        - Only address mental health questions; for other topics reply 'I cannot answer that question.'
+        
+        CONVERSATION CONTEXT:
+        The previous conversation history is included for continuity. Use it to provide consistent and appropriate support.
+        
+        EXPERT INSIGHTS:
+        Expert psychologist insights are provided below. Model your response after their therapeutic approach, professional tone, and clinical methodology.
+        
+        {message}"""
         
         return prompt, action
 
@@ -96,6 +112,8 @@ class PromptOptimizationRL:
         current_q_value = self.q_table[state][action]
         
         self.q_table[state][action] = current_q_value + self.learning_rate * (reward + self.discount_factor * self._max_q_value(state) - current_q_value)
+
+        #Q(s, a) = Q(s, a) + α * (r + γ * max Q(s', a') - Q(s, a))
 
     def _max_q_value(self, state):
         return max(self.q_table[state].values(), default=0.0)
