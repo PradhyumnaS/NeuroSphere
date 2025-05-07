@@ -1,6 +1,5 @@
 .env
 __pycache__/
 response.mp3
-backup.txt
 .vscode/
 .streamlit/secrets.toml

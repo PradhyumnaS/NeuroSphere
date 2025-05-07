@@ -157,13 +157,12 @@ def get_conversation_history():
         st.warning(f"Could not retrieve chat history from Redis: {e}")
         return []
 
-def add_to_conversation_history(user_message, assistant_message):
-    """Adds the user and assistant messages to Redis history."""
+def add_to_conversation_history(role, content):
+    """Adds a message to Redis history for context management."""
     if not redis_conn:
         return
     try:
-        redis_conn.rpush(SESSION_HISTORY_KEY, json.dumps({"role": "user", "content": user_message}))
-        redis_conn.rpush(SESSION_HISTORY_KEY, json.dumps({"role": "assistant", "content": assistant_message}))
+        redis_conn.rpush(SESSION_HISTORY_KEY, json.dumps({"role": role, "content": content}))
     except Exception as e:
         st.warning(f"Could not save chat history to Redis: {e}")
 
@@ -244,13 +243,17 @@ def speak(text):
 def process_message(message_text):
     if message_text:
         st.session_state.messages.append({"role": "user", "content": message_text})
-        st.session_state.messages.append({"role": "assistant", "content": "", "is_new": True})
+        st.chat_message("user").write(message_text)
+        add_to_conversation_history("user", message_text)
+        with st.chat_message("assistant"):
+            with st.spinner("Consulting the archives of the mind..."):
+                response_text, audio_file = generate_response(message_text)
+                st.write(response_text)
+                if audio_file:
+                    st.audio(audio_file)
+        st.session_state.messages.append({"role": "assistant", "content": response_text, "audio_file": audio_file})
+        add_to_conversation_history("assistant", response_text)
         st.session_state.needs_rerun = True
-
-def handle_text_submit():
-    message = st.session_state.text_input
-    if message:
-        process_message(message)
 
 if 'messages' not in st.session_state:
     st.session_state.messages = []
@@ -264,24 +267,8 @@ input_method = st.radio(
     ["Text Input", "Voice Recording (5-10 seconds recommended)"],
     label_visibility="collapsed"
 )
-
-if input_method == "Text Input":
-    col1, col2 = st.columns([5, 1])
-    with col1:
-        user_text = st.text_input(
-            "Type your message:",
-            key="text_input", 
-            label_visibility="collapsed",
-            on_change=handle_text_submit
-        )
-    with col2:
-        send_button = st.button(
-            "Send", 
-            use_container_width=True,
-            on_click=handle_text_submit
-        )
     
-else:
+if input_method == "Voice Recording (5-10 seconds recommended)":
     spoken_text = speech_to_text(
                     language='en',
                     start_prompt="Speak now...",
@@ -298,59 +285,46 @@ if st.session_state.needs_rerun:
     st.session_state.needs_rerun = False
     st.rerun()
 
-message_pairs = []
-for i in range(0, len(st.session_state.messages), 2):
-    if i+1 < len(st.session_state.messages):
-        message_pairs.append((st.session_state.messages[i], st.session_state.messages[i+1], i // 2, i))
+for i, msg in enumerate(st.session_state.messages):
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
+        if (
+            msg["role"] == "assistant"
+            and i == len(st.session_state.messages) - 1
+            and "audio_file" in msg
+            and msg["audio_file"]
+        ):
+            st.audio(msg["audio_file"])
+        if msg["role"] == "assistant" and i != 0:
+            feedback_col1, feedback_col2, feedback_col3, feedback_col4 = st.columns(4)
+            with feedback_col1:
+                if st.button("Helpful", key=f"helpful_{i}", use_container_width=True):
+                    reward = st.session_state.rl_agent.give_feedback("helpful")
+                    st.session_state.rl_agent.process_feedback(reward)
+                    st.toast("Thanks for your feedback!")
+                    save_conversation_to_knowledge_base(
+                        st.session_state.messages[i-1]["content"],
+                        msg["content"],
+                        "helpful")
+                    reload_knowledge_base()
+            with feedback_col2:
+                if st.button("Need Empathy", key=f"empathy_{i}", use_container_width=True):
+                    reward = st.session_state.rl_agent.give_feedback("more_empathy")
+                    st.session_state.rl_agent.process_feedback(reward)
+                    st.toast("I'll be more empathetic next time.")
+            with feedback_col3:
+                if st.button("Need Practicality", key=f"practical_{i}", use_container_width=True):
+                    reward = st.session_state.rl_agent.give_feedback("more_practical")
+                    st.session_state.rl_agent.process_feedback(reward)
+                    st.toast("I'll provide more practical advice next time.")
+            with feedback_col4:
+                if st.button("Not Helpful", key=f"not_helpful_{i}", use_container_width=True):
+                    reward = st.session_state.rl_agent.give_feedback("not_helpful")
+                    st.session_state.rl_agent.process_feedback(reward)
+                    st.toast("I'll improve my responses next time.")
 
-for idx, (user_msg, assistant_msg, pair_idx, msg_index) in enumerate(reversed(message_pairs)):
-    with st.chat_message(user_msg["role"]):
-        st.write(user_msg["content"])
-    with st.chat_message(assistant_msg["role"]):
-        is_latest = ("is_new" in assistant_msg and assistant_msg["is_new"] == True)
-        if is_latest:
-            with st.spinner("Generating response..."):
-                response, audio_file = generate_response(user_msg["content"])
-                st.session_state.messages[msg_index+1]["content"] = response
-                st.session_state.messages[msg_index+1]["audio_file"] = audio_file
-                st.session_state.messages[msg_index+1].pop("is_new", None)
-                add_to_conversation_history(user_msg["content"], response)
-                
-            st.write(response)
-            if audio_file:
-                st.audio(audio_file)
-        else:
-            st.write(assistant_msg["content"])
-            if "audio_file" in assistant_msg and assistant_msg["audio_file"]:
-                st.audio(assistant_msg["audio_file"])
-                
-        feedback_col1, feedback_col2, feedback_col3, feedback_col4 = st.columns(4)
-        
-        with feedback_col1:
-            if st.button("Helpful", key=f"helpful_{pair_idx}", use_container_width=True):
-                reward = st.session_state.rl_agent.give_feedback("helpful")
-                st.session_state.rl_agent.process_feedback(reward)
-                st.toast("Thanks for your feedback!")
-                save_conversation_to_knowledge_base(
-                    user_msg["content"], 
-                    assistant_msg["content"],
-                    "helpful")
-                reload_knowledge_base()
-
-        with feedback_col2:
-            if st.button("Need Empathy", key=f"empathy_{pair_idx}", use_container_width=True):
-                reward = st.session_state.rl_agent.give_feedback("more_empathy")
-                st.session_state.rl_agent.process_feedback(reward)
-                st.toast("I'll be more empathetic next time.")
-
-        with feedback_col3:
-            if st.button("Need Practicality", key=f"practical_{pair_idx}", use_container_width=True):
-                reward = st.session_state.rl_agent.give_feedback("more_practical")
-                st.session_state.rl_agent.process_feedback(reward)
-                st.toast("I'll provide more practical advice next time.")
-
-        with feedback_col4:
-            if st.button("Not Helpful", key=f"not_helpful_{pair_idx}", use_container_width=True):
-                reward = st.session_state.rl_agent.give_feedback("not_helpful")
-                st.session_state.rl_agent.process_feedback(reward)
-                st.toast("I'll improve my responses next time.")
+if prompt := st.chat_input("Type your message..."):
+    process_message(prompt) 
+if st.session_state.needs_rerun:
+    st.session_state.needs_rerun = False
+    st.rerun()
